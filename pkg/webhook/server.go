@@ -30,7 +30,6 @@ const (
 	ConfigWebhookBadURLError       = "URL for webhook invalid"
 	ConfigMetricNoTypeError        = "Must specify type for each inputs/outputs"
 	ConfigMetricNonStringTypeError = "Input/output type must be a string"
-	ConfigMetricNoInputError       = "MetricSinks require at least one input"
 )
 
 type ServerOpt func(*Server)
@@ -249,10 +248,6 @@ func validateMetricSinkConfig(rar v1beta1.AdmissionReview, cms sink.ClusterMetri
 		if _, ok := ot.(string); !ok {
 			return toAdmissionErrorResponse(ConfigMetricNonStringTypeError), nil
 		}
-	}
-
-	if cms.Kind == "MetricSink" && len(cms.Spec.Inputs) == 0 {
-		return toAdmissionErrorResponse(ConfigMetricNoInputError), nil
 	}
 
 	// Which version of default inputs irrelevant to validation at time of

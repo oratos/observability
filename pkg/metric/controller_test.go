@@ -396,6 +396,10 @@ func TestMetricSink(t *testing.T) {
 
   [[inputs.cpu]]
 
+  [[inputs.prometheus]]
+    monitor_kubernetes_pods = true
+    monitor_kubernetes_pods_namespace = "test-namespace"
+
 [outputs]
 
   [[outputs.datadog]]
@@ -461,7 +465,7 @@ func TestMetricSink(t *testing.T) {
 						}},
 						Containers: []v1.Container{{
 							Name:    "telegraf",
-							Image:   "telegraf:1.9.3-alpine",
+							Image:   "telegraf:" + metric.TelegrafImageVersion,
 							Command: []string{"telegraf", "--config-directory", "/etc/telegraf"},
 							VolumeMounts: []v1.VolumeMount{{
 								Name:      "telegraf-config",
@@ -488,12 +492,19 @@ func TestMetricSink(t *testing.T) {
 					UID:        d.UID,
 				}},
 			},
-			Rules: []rbacv1.PolicyRule{{
-				Verbs:         []string{"use"},
-				APIGroups:     []string{"extensions"},
-				Resources:     []string{"podsecuritypolicies"},
-				ResourceNames: []string{"telegraf"},
-			}},
+			Rules: []rbacv1.PolicyRule{
+				{
+					Verbs:         []string{"use"},
+					APIGroups:     []string{"extensions"},
+					Resources:     []string{"podsecuritypolicies"},
+					ResourceNames: []string{"telegraf"},
+				},
+				{
+					Verbs:     []string{"get", "list", "watch"},
+					APIGroups: []string{""},
+					Resources: []string{"pods"},
+				},
+			},
 		}
 
 		expectedRoleBinding := rbacv1.RoleBinding{
@@ -639,6 +650,10 @@ func TestMetricSink(t *testing.T) {
 
   [[inputs.cpu]]
 
+  [[inputs.prometheus]]
+    monitor_kubernetes_pods = true
+    monitor_kubernetes_pods_namespace = "test-namespace"
+
 [outputs]
 
   [[outputs.datadog]]
@@ -729,6 +744,10 @@ func TestMetricSink(t *testing.T) {
   [[inputs.cpu]]
 
   [[inputs.mem]]
+
+  [[inputs.prometheus]]
+    monitor_kubernetes_pods = true
+    monitor_kubernetes_pods_namespace = "test-namespace"
 
 [outputs]
 

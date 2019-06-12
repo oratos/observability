@@ -537,18 +537,6 @@ func TestValidator(t *testing.T) {
 						webhook.ConfigTelegrafError,
 					},
 				}
-				if ttype == "Namespace" {
-					tests = append(tests, invalidValidationTest{
-						"no input",
-						`{
-						"outputs": [{
-							"type": "datadog",
-							"apikey": "apikey"
-						}]
-					}`,
-						webhook.ConfigMetricNoInputError,
-					})
-				}
 				server := webhook.NewServer("127.0.0.1:0")
 				server.Run(false)
 				defer server.Close()
